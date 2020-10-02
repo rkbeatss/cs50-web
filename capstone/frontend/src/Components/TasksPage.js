@@ -121,7 +121,7 @@ class TasksPage extends React.Component {
 
         const task = this.state.task;
         const questions = this.state.questions;
-        const offers = this.state.offers; 
+        const offers = this.state.offers;
 
         return (
             <div>

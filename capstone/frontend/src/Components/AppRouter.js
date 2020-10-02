@@ -4,6 +4,7 @@ import TaskForm from './TaskForm';
 import TasksPage from './TasksPage';
 import Profile from './Profile';
 import LoginForm from './LoginForm';
+import RegisterForm from './RegisterForm';
 
 class AppRouter extends React.Component {
 
@@ -13,6 +14,7 @@ class AppRouter extends React.Component {
             <Router>
                 <Switch>
                     <Route exact path="/" component={LoginForm} />
+                    <Route exact path="/register" component={RegisterForm} />
                     <Route path="/post-task" component={TaskForm} />
                     <Route path="/tasks" component={TasksPage} />
                     <Route path="/profile/:username" component={Profile} />

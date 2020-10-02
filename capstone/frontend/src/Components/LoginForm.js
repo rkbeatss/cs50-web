@@ -14,6 +14,7 @@ class LoginForm extends React.Component {
         super(props);
         this.state = {
             loggedIn: localStorage.getItem('token') ? true : false,
+            validated: false,
             displayError: false,
             username: '',
             password: ''
@@ -29,22 +30,26 @@ class LoginForm extends React.Component {
             'Content-Type': 'application/json'
         };
 
-        axios.post(
-            url, {
-            username: this.state.username,
-            password: this.state.password
-        }, {
-            headers: headers
-        })
-        .then(response => {
-            localStorage.setItem('token', response.data.token);
-            this.setState({loggedIn: true})
-            console.log(response);
-        })
-        .catch(error => {
-            this.setState({displayError: true})
-            console.log(error);
-        });
+        if (this.state.username && this.state.password) {
+            axios.post(
+                url, {
+                username: this.state.username,
+                password: this.state.password
+            }, {
+                headers: headers
+            })
+            .then(response => {
+                localStorage.setItem('token', response.data.token);
+                this.setState({loggedIn: true})
+                console.log(response);
+            })
+            .catch(error => {
+                this.setState({displayError: true})
+                console.log(error);
+            });
+        } else {
+            this.setState({validated: true});
+        }
 
     }
 
@@ -53,7 +58,7 @@ class LoginForm extends React.Component {
         return (
             <div>
                 <NavMenu />
-                <Form className="m-3" onSubmit={this.loginUser}>
+                <Form className="m-3" onSubmit={this.loginUser} noValidate validated={this.state.validated}>
                     <h3>Sign in to Tasker</h3>
                     {
                         this.state.displayError &&
@@ -65,16 +70,24 @@ class LoginForm extends React.Component {
                                     value={this.state.username}
                                     autoFocus
                                     autoComplete="off"
+                                    required
                                     onChange={e => this.setState({username: e.target.value})}
                         />
+                        <Form.Control.Feedback type="invalid">
+                            Username is required
+                        </Form.Control.Feedback>
                     </Form.Group>
 
                     <Form.Group controlId="loginFormPassword">
                         <Form.Label>Password</Form.Label>
                         <Form.Control type="password"
                                     value={this.state.password}
+                                    required
                                     onChange={e => this.setState({password: e.target.value})}
                         />
+                        <Form.Control.Feedback type="invalid">
+                            Password is required
+                        </Form.Control.Feedback>
                     </Form.Group>
 
                     <Button variant="primary" type="submit">Sign in</Button>

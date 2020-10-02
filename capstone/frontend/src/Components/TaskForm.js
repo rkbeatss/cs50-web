@@ -9,7 +9,7 @@ import enAU from 'date-fns/locale/en-AU';
 import { API_URL } from '../Util/Constants';
 import NavMenu from './NavMenu';
 import 'react-datepicker/dist/react-datepicker.css';
-import './css/TaskForm.css';
+import './css/CustomForm.css';
 
 
 class TaskForm extends React.Component {
@@ -158,8 +158,7 @@ class TaskForm extends React.Component {
                     <Form.Group>
                         <Form.Label>Due Date</Form.Label>
                         <div>
-                            <DatePicker id="postFormDatePicker"
-                                        className={this.state.validated ? this.state.datePickerClassName : 'not-validated'}
+                            <DatePicker className={`customFormInput ${this.state.validated ? this.state.datePickerClassName : 'not-validated'}`}
                                         locale="enAU"
                                         dateFormat="dd/MM/yyyy"
                                         placeholderText="Click to select date"
@@ -171,7 +170,7 @@ class TaskForm extends React.Component {
                                         }}
                             />
                         </div>
-                        <p className={`postFormDatePickerMsg ${this.state.validated && this.state.datePickerClassName==='non-valid' ? "d-block": "d-none"}`}>
+                        <p className={`customFormMsg ${this.state.validated && this.state.datePickerClassName==='non-valid' ? "d-block": "d-none"}`}>
                             Please provide a due date
                         </p>
                     </Form.Group>
