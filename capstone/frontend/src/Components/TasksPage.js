@@ -29,6 +29,7 @@ class TasksPage extends React.Component {
             message: '',
             price: '',
             offerFormVisible: false,
+            username: jwt_decode(localStorage.getItem('token')).username,
             config: {
                 headers: {
                     'Authorization': `JWT ${localStorage.getItem('token')}`
@@ -90,7 +91,7 @@ class TasksPage extends React.Component {
         const url = `${API_URL}/questions/`;
         axios.post(url, {
             taskId: this.state.task.id,
-            commenter: jwt_decode(localStorage.getItem('token')).username,
+            commenter: this.state.username,
             content: this.state.question
         }, this.state.config)
         .then(response => console.log(response))
@@ -107,7 +108,7 @@ class TasksPage extends React.Component {
         axios.post(url, {
             taskId: this.state.task.id,
             price: this.state.price,
-            tasker: jwt_decode(localStorage.getItem('token')).username,
+            tasker: this.state.username,
             message: this.state.message
         }, this.state.config)
         .then(response => console.log(response))
@@ -140,7 +141,7 @@ class TasksPage extends React.Component {
                                     <div>
                                         <h4>{task.title}</h4>
                                         <TaskDetails task={task}/>
-                                        {!this.state.offerFormVisible &&
+                                        {!this.state.offerFormVisible && task.poster.username!== this.state.username &&
                                             <Button 
                                                 variant="success"
                                                 size="lg"
@@ -151,7 +152,7 @@ class TasksPage extends React.Component {
                                             </Button>
                                         }
 
-                                        {this.state.offerFormVisible &&
+                                        {this.state.offerFormVisible && task.poster.username!== this.state.username &&
                                             <Form className="mt-3" onSubmit={this.postOffer}>
                                                 <Form.Group controlId="offerFormMessage">
                                                     <Form.Control as="textarea"

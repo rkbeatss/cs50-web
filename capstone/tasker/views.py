@@ -3,7 +3,8 @@ from django.http import HttpResponse, JsonResponse
 from django.db.models import Q
 from rest_framework import permissions, status
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
 from rest_framework import status
 from datetime import date
 import json
@@ -28,11 +29,11 @@ def current_user(request):
 
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def users_collection(request):
     """
     API to create a new user
     """
-    permission_classes = (permissions.AllowAny,)
 
     if request.method == "POST":
         serializer = UserSerializerWithToken(data=request.data)
