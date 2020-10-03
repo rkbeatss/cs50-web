@@ -29,16 +29,6 @@ class ProfileDetails extends React.Component {
                     {`${user.num_tasks_completed} ${user.num_tasks_completed === 1 ? 'task' : 'tasks'} completed`}
                 </p>
 
-                <h4 className="mt-4">About</h4>
-                {
-                    user.about!=='' &&
-                    <p>{user.about}</p>
-                }
-                {
-                    user.about==='' &&
-                    <p><em>No description provided yet.</em></p>
-                }
-
             </div>
         );
     }

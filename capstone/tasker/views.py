@@ -18,10 +18,10 @@ def index(request):
     return HttpResponse("Hello World!")
 
 
-@api_view(['GET'])
+@api_view(["GET", "PUT"])
 def user_element(request, username):
     """
-    API to get information about a specific user
+    API to get or update information about a specific user
     """
     try:
         user = User.objects.get(username=username)
@@ -31,9 +31,16 @@ def user_element(request, username):
     if request.method == "GET":
         serializer = UserSerializer(user)
         return Response(serializer.data)
+    
+    elif request.method == "PUT":
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['POST'])
+@api_view(["POST"])
 @permission_classes([AllowAny])
 def users_collection(request):
     """
