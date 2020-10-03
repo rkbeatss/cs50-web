@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+import jwt_decode from 'jwt-decode';
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -89,7 +90,7 @@ class TasksPage extends React.Component {
         const url = `${API_URL}/questions/`;
         axios.post(url, {
             taskId: this.state.task.id,
-            commenter: 's_naomi',
+            commenter: jwt_decode(localStorage.getItem('token')).username,
             content: this.state.question
         }, this.state.config)
         .then(response => console.log(response))
@@ -106,7 +107,7 @@ class TasksPage extends React.Component {
         axios.post(url, {
             taskId: this.state.task.id,
             price: this.state.price,
-            tasker: 's_naomi',
+            tasker: jwt_decode(localStorage.getItem('token')).username,
             message: this.state.message
         }, this.state.config)
         .then(response => console.log(response))

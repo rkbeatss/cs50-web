@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+import jwt_decode from 'jwt-decode';
 import { Redirect } from "react-router-dom";
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
@@ -22,7 +23,7 @@ class TaskForm extends React.Component {
             category: 'Other',
             budget: '',
             dueDate: null,
-            poster: 's_naomi',
+            poster: jwt_decode(localStorage.getItem('token')).username,
             validated: false,
             datePickerClassName: 'not-validated',
             validForm: false
