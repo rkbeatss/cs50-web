@@ -3,6 +3,7 @@ import jwt_decode from 'jwt-decode';
 import Navbar from 'react-bootstrap/NavBar';
 import Nav from 'react-bootstrap/Nav';
 import { Link } from 'react-router-dom';
+import logo from '../images/logo.png';
 
 class NavMenu extends React.Component {
 
@@ -12,7 +13,7 @@ class NavMenu extends React.Component {
             <Navbar sticky="top" bg="light" variant="light" expand="lg">
                 <Navbar.Brand as={Link} to="/">
                     <img 
-                        src="logo.png"
+                        src={logo}
                         alt=""
                         width="30"
                         height="30"

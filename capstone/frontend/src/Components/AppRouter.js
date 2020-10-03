@@ -16,7 +16,8 @@ class AppRouter extends React.Component {
                     <Route exact path="/" component={LoginForm} />
                     <Route exact path="/register" component={RegisterForm} />
                     <Route path="/post-task" component={TaskForm} />
-                    <Route path="/tasks" component={TasksPage} />
+                    <Route path="/tasks/:taskid" component={TasksPage} />
+                    <Route path="/tasks/" component={TasksPage} />
                     <Route path="/profile/:username" component={Profile} />
                 </Switch>
             </Router>

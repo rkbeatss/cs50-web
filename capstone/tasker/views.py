@@ -1,6 +1,5 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
-from django.db.models import Q
 from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
@@ -240,6 +239,6 @@ def user_reviews_collection(request, username):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == "GET":
-        reviews = Review.objects.filter(Q(reviewer=user) | Q(reviewee=user)).all()
+        reviews = Review.objects.filter(reviewee=user).all().order_by("-timestamp")
         serializer = ReviewSerializer(reviews, many=True)
         return Response(serializer.data)

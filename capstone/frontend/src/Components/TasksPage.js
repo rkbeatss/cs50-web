@@ -66,7 +66,12 @@ class TasksPage extends React.Component {
     }
 
     getMostRecentTask() {
-        const url = `${API_URL}/tasks/top`;
+        let url;
+        if (this.props.match.params.taskid) {
+            url = `${API_URL}/tasks/${this.props.match.params.taskid}`;
+        } else {
+            url = `${API_URL}/tasks/top`;
+        }
         axios.get(url, this.state.config)
         .then(response => response.data)
         .then(task => this.fetchTask(task))
