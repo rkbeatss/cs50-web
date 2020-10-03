@@ -22,6 +22,7 @@ class RegisterForm extends React.Component {
             firstName: '',
             lastName: '',
             email: '',
+            about: '',
             username: '',
             password: '',
             confirmPassword: ''
@@ -65,6 +66,7 @@ class RegisterForm extends React.Component {
                 last_name: this.state.lastName, 
                 username: this.state.username,
                 email: this.state.email,
+                about: this.state.about,
                 password: this.state.password
             }, {
                 headers: headers
@@ -147,6 +149,19 @@ class RegisterForm extends React.Component {
                         <Form.Control.Feedback type="invalid">
                             Email address is required
                         </Form.Control.Feedback>
+                    </Form.Group>
+
+                    <Form.Group controlId="registerFormAbout">
+                        <Form.Label>About</Form.Label>
+                        <Form.Control as="textarea"
+                                      maxLength={500}
+                                      rows="4"
+                                      value={this.state.about}
+                                      onChange={e => this.setState({about: e.target.value})}
+                        />
+                        <Form.Text className="text-muted">
+                            Add an optional profile description. You can edit this later.
+                        </Form.Text>
                     </Form.Group>
 
                     <Form.Group controlId="registerFormPassword">

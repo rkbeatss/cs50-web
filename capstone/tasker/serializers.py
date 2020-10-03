@@ -3,9 +3,19 @@ from rest_framework_jwt.settings import api_settings
 from . models import User, Task, Offer, Question, Review
 
 class UserSerializer(serializers.ModelSerializer):
+    
+    num_tasks_posted = serializers.SerializerMethodField()
+    num_tasks_completed = serializers.SerializerMethodField()
+
+    def get_num_tasks_posted(self, obj):
+        return len(Task.objects.filter(poster=obj).all())
+
+    def get_num_tasks_completed(self, obj):
+        return len(Task.objects.filter(assignee=obj, status="Completed"))
+
     class Meta:
         model = User
-        fields = ("id", "username", "first_name", "last_name")
+        fields = ("id", "username", "first_name", "last_name", "date_joined", "about", "num_tasks_posted", "num_tasks_completed")
 
 
 class UserSerializerWithToken(serializers.ModelSerializer):
@@ -31,7 +41,7 @@ class UserSerializerWithToken(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("token", "username", "password", "first_name", "last_name", "email")
+        fields = ("token", "username", "password", "first_name", "last_name", "email", "about")
 
 
 class TaskSerializer(serializers.ModelSerializer):

@@ -20,12 +20,18 @@ def index(request):
 
 
 @api_view(['GET'])
-def current_user(request):
+def user_element(request, username):
     """
-    Determine the current user by their token, and return their data
+    API to get information about a specific user
     """
-    serializer = UserSerializer(request.user)
-    return Response(serializer.data)
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == "GET":
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
 
 
 @api_view(['POST'])
@@ -34,7 +40,6 @@ def users_collection(request):
     """
     API to create a new user
     """
-
     if request.method == "POST":
         serializer = UserSerializerWithToken(data=request.data)
         if serializer.is_valid():
