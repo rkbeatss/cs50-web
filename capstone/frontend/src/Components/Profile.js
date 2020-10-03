@@ -3,9 +3,9 @@ import axios from 'axios';
 import NavMenu from './NavMenu';
 import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
-import { Calendar3, CheckSquare, Sticky } from 'react-bootstrap-icons';
 import { API_URL } from '../Util/Constants';
 import ReviewBoard from './ReviewBoard';
+import ProfileDetails from './ProfileDetails';
 
 class Profile extends React.Component {
 
@@ -57,41 +57,13 @@ class Profile extends React.Component {
         const reviews = this.state.reviews;
         const reviews_as_poster = reviews.filter(review => review.task.poster.username===user.username);
         const reviews_as_tasker = reviews.filter(review => review.task.assignee && review.task.assignee.username===user.username);
-        const options = { year: 'numeric', month: 'short', day: 'numeric' };
-        const iconSize = 20;
 
         return (
             <div>
                 <NavMenu />
                 {user &&
                 <div className="m-3">
-                    <h3 className="mb-0">
-                        {`${user.first_name} ${user.last_name}`}
-                    </h3>
-                    <h5 className="text-muted">@{user.username}</h5>
-                    
-                    <p className="text-muted mb-1">
-                        <Calendar3 size={iconSize} className="mr-2" />
-                        {`Member since ${new Date(user.date_joined).toLocaleDateString('en-AU', options)}`}
-                    </p>
-                    <p className="text-muted mb-1">
-                        <Sticky size={iconSize} className="mr-2" />
-                        {`${user.num_tasks_posted} ${user.num_tasks_posted === 1 ? 'task' : 'tasks'} posted`}
-                    </p>
-                    <p className="text-muted mb-1">
-                        <CheckSquare size={iconSize} className="mr-2" />
-                        {`${user.num_tasks_completed} ${user.num_tasks_completed === 1 ? 'task' : 'tasks'} completed`}
-                    </p>
-
-                    <h4 className="mt-4">About</h4>
-                    {
-                        user.about!=='' &&
-                        <p>{user.about}</p>
-                    }
-                    {
-                        user.about==='' &&
-                        <p><em>No description provided yet.</em></p>
-                    }
+                    <ProfileDetails user={user} />
 
                     <h4>Reviews</h4>
 
