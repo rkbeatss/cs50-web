@@ -147,11 +147,11 @@ class Profile extends React.Component {
                           transition={false}
                           onSelect={k => this.setState({key: k})}
                     >
-                        <Tab eventKey="tasker" title="As Tasker">
+                        <Tab eventKey="tasker" title={`As Tasker (${reviews_as_tasker.length})`}>
                             <ReviewBoard reviews={reviews_as_tasker}/>
                         </Tab>
 
-                        <Tab eventKey="poster" title="As Poster">
+                        <Tab eventKey="poster" title={`As Poster (${reviews_as_poster.length})`}>
                             <ReviewBoard reviews={reviews_as_poster}/>
                         </Tab>
                     </Tabs>
