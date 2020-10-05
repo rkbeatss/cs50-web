@@ -149,7 +149,10 @@ class TasksPage extends React.Component {
 
                                         <h4>{task.title}</h4>
                                         <TaskDetails task={task}/>
-                                        {!this.state.offerFormVisible && task.poster.username!== this.state.username &&
+                                        {
+                                            !this.state.offerFormVisible &&
+                                            task.poster.username!== this.state.username &&
+                                            task.status==='Open' &&
                                             <Button 
                                                 variant="success"
                                                 size="lg"
@@ -211,24 +214,29 @@ class TasksPage extends React.Component {
 
                                         <hr />
                                         <h4>{`Questions (${questions.length})`}</h4>
-                                        <Form onSubmit={this.postQuestion}>
-                                            <Form.Group className="mb-1" controlId="questionsForm">
-                                                <Form.Control as="textarea"
-                                                            rows="3"
-                                                            value={this.state.question}
-                                                            placeholder={`Ask ${task.poster.first_name} a question`}
-                                                            maxLength={1500}
-                                                            onChange={e => this.setState({question: e.target.value})}
-                                                />
-                                            </Form.Group>
-                                            <Button variant="primary" 
-                                                    type="submit" 
-                                                    size="sm" 
-                                                    disabled={this.state.question===''}
-                                            >
-                                                Send
-                                            </Button>
-                                        </Form>
+                                        {
+                                            task.status==='Open' &&
+                                            <Form onSubmit={this.postQuestion}>
+                                                <Form.Group className="mb-1" controlId="questionsForm">
+                                                    <Form.Control as="textarea"
+                                                                rows="3"
+                                                                value={this.state.question}
+                                                                placeholder={task.poster.username===this.state.username ? 
+                                                                    'Respond to questions' :
+                                                                    `Ask ${task.poster.first_name} a question`}
+                                                                maxLength={1500}
+                                                                onChange={e => this.setState({question: e.target.value})}
+                                                    />
+                                                </Form.Group>
+                                                <Button variant="primary" 
+                                                        type="submit" 
+                                                        size="sm" 
+                                                        disabled={this.state.question===''}
+                                                >
+                                                    Send
+                                                </Button>
+                                            </Form>
+                                        }
 
                                         <QuestionsBoard questions={questions}
                                                         posterId={task.poster.id}
