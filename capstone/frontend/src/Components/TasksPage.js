@@ -12,6 +12,7 @@ import QuestionsBoard from './QuestionsBoard';
 import OffersBoard from './OffersBoard';
 import TaskDetails from './TaskDetails';
 import NavMenu from './NavMenu';
+import Progressbar from './ProgressBar';
 import './css/TasksPage.css';
 import { API_URL } from '../Util/Constants';
 
@@ -144,6 +145,8 @@ class TasksPage extends React.Component {
                             <Col sm={8} id="detailsCol">
                                 {this.state.task &&
                                     <div>
+                                        <Progressbar status={task.status} />
+
                                         <h4>{task.title}</h4>
                                         <TaskDetails task={task}/>
                                         {!this.state.offerFormVisible && task.poster.username!== this.state.username &&
