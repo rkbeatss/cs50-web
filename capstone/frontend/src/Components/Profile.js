@@ -10,6 +10,7 @@ import { API_URL } from '../Util/Constants';
 import ReviewBoard from './ReviewBoard';
 import ProfileDetails from './ProfileDetails';
 import './css/Profile.css';
+import './css/Index.css';
 
 class Profile extends React.Component {
 
@@ -81,7 +82,7 @@ class Profile extends React.Component {
             <div>
                 <NavMenu />
                 {user &&
-                <div className="m-3">
+                <div className="page">
                     <ProfileDetails user={user} />
 
                     <h4 className="mt-4 d-flex align-items-center">

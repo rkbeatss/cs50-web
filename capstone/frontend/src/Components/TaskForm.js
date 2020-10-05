@@ -11,6 +11,7 @@ import { API_URL } from '../Util/Constants';
 import NavMenu from './NavMenu';
 import 'react-datepicker/dist/react-datepicker.css';
 import './css/CustomForm.css';
+import './css/Index.css';
 
 
 class TaskForm extends React.Component {
@@ -96,7 +97,7 @@ class TaskForm extends React.Component {
         return (
             <div>
                 <NavMenu />
-                <Form className="m-3" onSubmit={this.postTask} noValidate validated={this.state.validated}>
+                <Form className="page" onSubmit={this.postTask} noValidate validated={this.state.validated}>
                     <h3>Post a New Task</h3>
                     <Form.Group controlId="taskFormTitle">
                         <Form.Label>Task Title</Form.Label>

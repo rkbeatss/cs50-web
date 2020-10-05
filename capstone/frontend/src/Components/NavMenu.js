@@ -4,13 +4,14 @@ import Navbar from 'react-bootstrap/NavBar';
 import Nav from 'react-bootstrap/Nav';
 import { Link } from 'react-router-dom';
 import logo from '../images/logo.png';
+import './css/NavBar.css';
 
 class NavMenu extends React.Component {
 
     render() {
 
         return (
-            <Navbar sticky="top" bg="light" variant="light" expand="lg">
+            <Navbar sticky="top" bg="light" variant="light" expand="lg" className={this.props.default ? '' : 'nav-custom'}>
                 <Navbar.Brand as={Link} to="/">
                     <img 
                         src={logo}

@@ -6,6 +6,7 @@ import Alert from 'react-bootstrap/Alert';
 import NavMenu from './NavMenu';
 import { Redirect } from "react-router-dom";
 import { API_URL } from '../Util/Constants';
+import './css/Index.css';
 
 
 class LoginForm extends React.Component {
@@ -58,7 +59,7 @@ class LoginForm extends React.Component {
         return (
             <div>
                 <NavMenu />
-                <Form className="m-3" onSubmit={this.loginUser} noValidate validated={this.state.validated}>
+                <Form className="page" onSubmit={this.loginUser} noValidate validated={this.state.validated}>
                     <h3>Sign in to Tasker</h3>
                     {
                         this.state.displayError &&

@@ -17,4 +17,5 @@ urlpatterns = [
     path("api/profile/<str:username>", views.user_element),
     path("api/users/", views.users_collection),
     path('api/token-auth/', obtain_jwt_token),
+    path("api/tasks/<int:task_id>/reviews", views.offers_reviews_collection)
 ]

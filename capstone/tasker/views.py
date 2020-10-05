@@ -249,3 +249,21 @@ def user_reviews_collection(request, username):
         reviews = Review.objects.filter(reviewee=user).all().order_by("-timestamp")
         serializer = ReviewSerializer(reviews, many=True)
         return Response(serializer.data)
+
+
+@api_view(["GET"])
+def offers_reviews_collection(request, task_id):
+    """
+    API to get all reviews associated with users who have posted an offer for a specific task
+    """
+    try:
+        task = Task.objects.get(id=task_id)
+    except Task.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == "GET":
+        offers = Offer.objects.filter(task=task).all()
+        taskers = offers.values_list("tasker", flat=True)
+        reviews = Review.objects.filter(reviewee__id__in=taskers).all().order_by("-timestamp")
+        serializer = ReviewSerializer(reviews, many=True)
+        return Response(serializer.data)

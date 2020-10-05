@@ -8,6 +8,7 @@ import NavMenu from './NavMenu';
 import { Redirect } from "react-router-dom";
 import { API_URL } from '../Util/Constants';
 import './css/CustomForm.css';
+import './css/Index.css';
 
 
 class RegisterForm extends React.Component {
@@ -91,7 +92,7 @@ class RegisterForm extends React.Component {
         return (
             <div>
                 <NavMenu />
-                <Form className="m-3" onSubmit={this.registerUser} noValidate validated={this.state.validated}>
+                <Form className="page" onSubmit={this.registerUser} noValidate validated={this.state.validated}>
                     <h3>Register New User</h3>
                     {
                         this.state.displayUsernameError &&

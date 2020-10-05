@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 import jwt_decode from 'jwt-decode';
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row';
@@ -15,7 +16,7 @@ import NavMenu from './NavMenu';
 import Progressbar from './ProgressBar';
 import './css/TasksPage.css';
 import { API_URL } from '../Util/Constants';
-
+import './css/Index.css';
 
 class TasksPage extends React.Component {
 
@@ -133,8 +134,8 @@ class TasksPage extends React.Component {
 
         return (
             <div>
-                <NavMenu />
-                <div className="m-3 tasksPage">
+                <NavMenu default={false} />
+                <div className="tasksPage page">
                     <h3>Open Tasks</h3>
                     <Container fluid>
                         <Row>
@@ -151,16 +152,35 @@ class TasksPage extends React.Component {
                                         <TaskDetails task={task}/>
                                         {
                                             !this.state.offerFormVisible &&
-                                            task.poster.username!== this.state.username &&
+                                            task.poster.username!==this.state.username &&
                                             task.status==='Open' &&
                                             <Button 
                                                 variant="success"
                                                 size="lg"
-                                                className="mt-2 w-100"
+                                                className="mt-2"
+                                                block
                                                 onClick={() => this.setState({offerFormVisible: !this.state.offerFormVisible})}
                                             >
                                                 Make an Offer
                                             </Button>
+                                        }
+                                        {
+                                            task.poster.username===this.state.username &&
+                                            <Link to={{
+                                                pathname: `/offers/${task.id}`,
+                                                state: {
+                                                    task: task,
+                                                    offers: offers
+                                                }}}>
+                                                <Button 
+                                                    variant="primary"
+                                                    size="lg"
+                                                    className="mt-2"
+                                                    block
+                                                >
+                                                    Review All Offers
+                                                </Button>
+                                            </Link>
                                         }
 
                                         {this.state.offerFormVisible && task.poster.username!== this.state.username &&
@@ -221,9 +241,11 @@ class TasksPage extends React.Component {
                                                     <Form.Control as="textarea"
                                                                 rows="3"
                                                                 value={this.state.question}
-                                                                placeholder={task.poster.username===this.state.username ? 
+                                                                placeholder={
+                                                                    task.poster.username===this.state.username ? 
                                                                     'Respond to questions' :
-                                                                    `Ask ${task.poster.first_name} a question`}
+                                                                    `Ask ${task.poster.first_name} a question`
+                                                                }
                                                                 maxLength={1500}
                                                                 onChange={e => this.setState({question: e.target.value})}
                                                     />

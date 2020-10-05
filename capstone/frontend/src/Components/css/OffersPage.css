@@ -1,0 +1,18 @@
+/* .carousel {
+    background-color: orange;
+} */
+
+.carousel-control-prev,
+.carousel-control-next{
+      width: 3% !important;
+      bottom: 100% !important;
+}
+
+.carousel-indicators {
+    bottom: 100% !important;
+    margin: 0 !important;
+}
+
+.carousel-indicators li {
+    background-color: black !important;
+}

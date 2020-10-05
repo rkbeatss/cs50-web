@@ -5,6 +5,7 @@ import TasksPage from './TasksPage';
 import Profile from './Profile';
 import LoginForm from './LoginForm';
 import RegisterForm from './RegisterForm';
+import OffersPage from './OffersPage';
 
 class AppRouter extends React.Component {
 
@@ -19,6 +20,7 @@ class AppRouter extends React.Component {
                     <Route path="/tasks/:taskid" component={TasksPage} />
                     <Route path="/tasks/" component={TasksPage} />
                     <Route path="/profile/:username" component={Profile} />
+                    <Route path="/offers/:taskid" component={OffersPage} />
                 </Switch>
             </Router>
         );
