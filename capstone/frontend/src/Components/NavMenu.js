@@ -18,7 +18,7 @@ class NavMenu extends React.Component {
                         alt=""
                         width="30"
                         height="30"
-                        className="d-inline-block align-top"
+                        className="d-inline-block align-top brand"
                     />{' '}
                     Tasker
                 </Navbar.Brand>

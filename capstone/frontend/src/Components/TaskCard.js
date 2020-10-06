@@ -50,7 +50,7 @@ class TaskCard extends React.Component {
         return (
             <Link to={`/tasks/${task.id}`} className="card-link m-0">
                 <Card className={cardClassName} onClick={this.handleClick}>
-                    <Card.Body>
+                    <Card.Body className="p-3">
                         <Container>
                             <Row>
                                 <Col xs={8} className="p-0">
@@ -66,7 +66,7 @@ class TaskCard extends React.Component {
                             {due_date}
                         </Card.Subtitle>
                     </Card.Body>
-                    <Card.Footer>
+                    <Card.Footer className="py-2">
                             <strong className={`text-uppercase ${text_color}`}>{status}</strong>
                             {num_offers > 0 && status === 'Open' &&
                                 <span className="text-muted">{` \u{2022} ${num_offers} ${offer_text}`}</span>

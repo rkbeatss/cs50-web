@@ -166,12 +166,13 @@ class TasksPage extends React.Component {
                                         }
                                         {
                                             task.poster.username===this.state.username &&
+                                            offers.length > 0 &&
                                             <Link to={{
                                                 pathname: `/offers/${task.id}`,
                                                 state: {
                                                     task: task,
                                                     offers: offers
-                                                }}}>
+                                                }}} className="text-decoration-none">
                                                 <Button 
                                                     variant="primary"
                                                     size="lg"
@@ -181,6 +182,19 @@ class TasksPage extends React.Component {
                                                     Review All Offers
                                                 </Button>
                                             </Link>
+                                        }
+                                        {
+                                            task.poster.username===this.state.username &&
+                                            offers.length===0 &&
+                                            <Button 
+                                                variant="primary"
+                                                size="lg"
+                                                className="mt-2"
+                                                disabled={true}
+                                                block
+                                            >
+                                                No Offers to Review Yet
+                                            </Button>
                                         }
 
                                         {this.state.offerFormVisible && task.poster.username!== this.state.username &&

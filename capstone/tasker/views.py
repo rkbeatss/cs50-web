@@ -264,6 +264,6 @@ def offers_reviews_collection(request, task_id):
     if request.method == "GET":
         offers = Offer.objects.filter(task=task).all()
         taskers = offers.values_list("tasker", flat=True)
-        reviews = Review.objects.filter(reviewee__id__in=taskers).all().order_by("-timestamp")
+        reviews = Review.objects.filter(reviewee__id__in=taskers, task__assignee__isnull=False).all().order_by("-timestamp")
         serializer = ReviewSerializer(reviews, many=True)
         return Response(serializer.data)
