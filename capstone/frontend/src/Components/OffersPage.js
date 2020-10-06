@@ -8,7 +8,6 @@ import Button from 'react-bootstrap/Button';
 import ReviewBoard from './ReviewBoard';
 import ReviewSummary from './ReviewSummary';
 import { API_URL } from '../Util/Constants';
-import { CaretLeftFill, CaretRightFill } from 'react-bootstrap-icons';
 import './css/OffersPage.css';
 import './css/Index.css';
 
@@ -51,7 +50,6 @@ class OffersPage extends React.Component {
         const task = this.state.task;
         const offers = this.state.offers;
         const reviews = this.state.reviews;
-        const iconSize = 35;
 
         return (
             <div>
@@ -63,8 +61,6 @@ class OffersPage extends React.Component {
                     <Carousel activeIndex={this.state.index}
                               interval={5000}
                               className="mt-4 carousel"
-                            //   prevIcon={<CaretLeftFill className="arrow" size={iconSize} color="black"/>}
-                            //   nextIcon={<CaretRightFill className="arrow" size={iconSize} color="black"/>}
                               onSelect={i => this.setState({index: i})}
                     >
                         {offers.map(offer => (
