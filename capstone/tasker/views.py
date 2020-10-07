@@ -111,15 +111,32 @@ def task_element(request, task_id):
         return Response(serializer.data)
 
     elif request.method == "PUT":
-        serializer = TaskSerializer(task, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        data = json.loads(request.body)
+        
+        status = data.get("status", "")
+        task.status = status
+
+        try:
+            assignee = User.objects.get(username=data.get("assignee", ""))
+            task.assignee = assignee
+        except:
+            pass
+        
+        task.save()
+        return JsonResponse({"message": "Task updated successfully"}, status=204)
+    
+    # elif request.method == "PUT":
+
+    #     serializer = TaskSerializer(task, data=request.data, partial=True)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response(status=status.HTTP_204_NO_CONTENT)
+    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == "DELETE":
         task.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 
 @api_view(["GET"])

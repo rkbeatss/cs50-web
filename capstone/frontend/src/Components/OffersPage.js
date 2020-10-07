@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import NavMenu from './NavMenu';
 import Carousel from 'react-bootstrap/Carousel';
 import Alert from 'react-bootstrap/Alert';
@@ -20,6 +20,7 @@ class OffersPage extends React.Component {
             task: this.props.location.state.task,
             offers: this.props.location.state.offers,
             reviews: [],
+            offerAccepted: false,
             config: {
                 headers: {
                     'Authorization': `JWT ${localStorage.getItem('token')}`
@@ -38,7 +39,22 @@ class OffersPage extends React.Component {
     }
 
     acceptOffer(offer) {
-        console.log(offer.price);
+        const url = `${API_URL}/tasks/${this.state.task.id}`;
+        axios.put(url, {
+            status: 'Assigned',
+            assignee: offer.tasker.username
+        }, this.state.config)
+        .then(response => {
+            console.log(response);
+            this.setState({offerAccepted: true});
+        });
+
+        this.setState(prevState => ({
+            task: {
+                ...prevState.task,
+                status: 'Assigned'
+            },
+        }));
     }
 
     componentDidMount() {
@@ -55,11 +71,17 @@ class OffersPage extends React.Component {
             <div>
                 <NavMenu />
                 <div className="page">
+                    {
+                        task.status!=='Open' &&
+                        <Alert variant="danger">
+                            This task is no longer open.
+                        </Alert>
+                    }
                     <h3 className="mb-0">Review Offers</h3>
                     <h4 className="text-muted">{task.title}</h4>
 
                     <Carousel activeIndex={this.state.index}
-                              interval={5000}
+                              interval={null}
                               className="mt-4 carousel"
                               onSelect={i => this.setState({index: i})}
                     >
@@ -79,16 +101,19 @@ class OffersPage extends React.Component {
                                             Offer
                                         </Alert.Heading>
                                         <h3>${offer.price}</h3>
-                                        <p className="mb-3">{offer.message}</p>
+                                        <p className="mb-0">{offer.message}</p>
 
-                                        <Button 
-                                            variant="success"
-                                            size="lg"
-                                            className="mb-2"
-                                            onClick={() => this.acceptOffer(offer)}
-                                        >
-                                            Accept Offer
-                                        </Button>
+                                        {
+                                            task.status==='Open' &&
+                                            <Button 
+                                                variant="success"
+                                                size="lg"
+                                                className="mb-2 mt-3"
+                                                onClick={() => this.acceptOffer(offer)}
+                                            >
+                                                Accept Offer
+                                            </Button>
+                                        }
                                     </Alert>
 
                                     <h5 className="mt-4 mb-0">Reviews</h5>
@@ -100,7 +125,7 @@ class OffersPage extends React.Component {
 
                     </Carousel>
 
-
+                    {this.state.offerAccepted && <Redirect to="/tasks/" />}
                 </div>
             </div>
         );

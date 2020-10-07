@@ -5,7 +5,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import timeDiff from '../Util/Functions';
 import './css/TasksPage.css';
-import { PersonCircle, CalendarCheck, ChatLeftText, Diagram3, Wallet} from 'react-bootstrap-icons';
+import { PersonCircle, PersonCheckFill, CalendarCheck, ChatLeftText, Diagram3, Wallet} from 'react-bootstrap-icons';
 
 
 class TaskDetails extends React.Component {
@@ -37,6 +37,26 @@ class TaskDetails extends React.Component {
                         </Col>
                     </Row>
                 </Container>
+
+                {
+                    task.assignee &&
+                    <Container fluid>
+                        <Row>
+                            <Col className={iconClass} md="auto">
+                                <PersonCheckFill size={iconSize} />
+                            </Col>
+                            <Col>
+                                <small>ASSIGNED TO</small>
+                                <Link to={`/profile/${task.assignee.username}`}>
+                                    <h6 className="text-primary mb-3">
+                                        {`${task.assignee.first_name} ${task.assignee.last_name} `}
+                                        <span className="text-muted">{`@${task.assignee.username}`}</span>
+                                    </h6>
+                                </Link>
+                            </Col>
+                        </Row>
+                    </Container>
+                }
 
                 <Container fluid>
                     <Row>

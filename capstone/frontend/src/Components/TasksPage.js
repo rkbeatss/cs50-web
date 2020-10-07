@@ -45,6 +45,7 @@ class TasksPage extends React.Component {
         this.postQuestion = this.postQuestion.bind(this);
         this.postOffer = this.postOffer.bind(this);
         this.getAllTasks = this.getAllTasks.bind(this);
+        this.markTaskAsComplete = this.markTaskAsComplete.bind(this);
     }
 
     getQuestions(taskID) {
@@ -126,6 +127,23 @@ class TasksPage extends React.Component {
         this.setState({message: '', price: '', offerFormVisible: false});
     }
 
+    markTaskAsComplete() {
+        const url = `${API_URL}/tasks/${this.state.task.id}`;
+        axios.put(url, {
+            status: 'Completed',
+        }, this.state.config)
+        .then(response => console.log(response))
+        // Calling this to update offer number on card - must be more efficient way to do this?
+        .then(() => this.getAllTasks());
+
+        this.setState(prevState => ({
+            task: {
+                ...prevState.task,
+                status: 'Completed'
+            },
+        }));
+    }
+
     render() {
 
         const task = this.state.task;
@@ -166,6 +184,7 @@ class TasksPage extends React.Component {
                                         }
                                         {
                                             task.poster.username===this.state.username &&
+                                            task.status==='Open' &&
                                             offers.length > 0 &&
                                             <Link to={{
                                                 pathname: `/offers/${task.id}`,
@@ -185,7 +204,21 @@ class TasksPage extends React.Component {
                                         }
                                         {
                                             task.poster.username===this.state.username &&
+                                            task.status==='Assigned' &&
+                                            <Button 
+                                                variant="danger"
+                                                size="lg"
+                                                className="mt-2"
+                                                block
+                                                onClick={this.markTaskAsComplete}
+                                            >
+                                                Mark As Complete
+                                            </Button>
+                                        }
+                                        {
+                                            task.poster.username===this.state.username &&
                                             offers.length===0 &&
+                                            task.status==='Open' &&
                                             <Button 
                                                 variant="primary"
                                                 size="lg"
