@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+import Rating from 'react-rating';
 import { Link } from 'react-router-dom';
 import jwt_decode from 'jwt-decode';
 import Container from 'react-bootstrap/Container'
@@ -14,8 +15,9 @@ import OffersBoard from './OffersBoard';
 import TaskDetails from './TaskDetails';
 import NavMenu from './NavMenu';
 import Progressbar from './ProgressBar';
-import './css/TasksPage.css';
+import { StarFill } from 'react-bootstrap-icons';
 import { API_URL } from '../Util/Constants';
+import './css/TasksPage.css';
 import './css/Index.css';
 
 class TasksPage extends React.Component {
@@ -30,7 +32,10 @@ class TasksPage extends React.Component {
             question: '',
             message: '',
             price: '',
+            reviewMessage: '',
+            reviewRating: 0,
             offerFormVisible: false,
+            reviewFormVisible: false,
             username: jwt_decode(localStorage.getItem('token')).username,
             config: {
                 headers: {
@@ -44,6 +49,7 @@ class TasksPage extends React.Component {
         this.getMostRecentTask = this.getMostRecentTask.bind(this);
         this.postQuestion = this.postQuestion.bind(this);
         this.postOffer = this.postOffer.bind(this);
+        this.postReview = this.postReview.bind(this);
         this.getAllTasks = this.getAllTasks.bind(this);
         this.markTaskAsComplete = this.markTaskAsComplete.bind(this);
     }
@@ -63,7 +69,15 @@ class TasksPage extends React.Component {
     }
 
     fetchTask(task) {
-        this.setState({task: task, offerFormVisible: false});
+        this.setState({
+            task: task, 
+            offerFormVisible: false, 
+            reviewFormVisible: false,
+            message: '',
+            price: '',
+            reviewMessage: '',
+            reviewRating: 0
+        });
         this.getQuestions(task.id);
         this.getOffers(task.id);
     }
@@ -126,6 +140,27 @@ class TasksPage extends React.Component {
 
         this.setState({message: '', price: '', offerFormVisible: false});
     }
+    
+    // Post the review by submitting form
+    postReview(event) {
+        event.preventDefault();
+
+        const reviewee = this.state.username===this.state.task.poster.username ?
+                         this.state.task.assignee.username :
+                         this.state.task.poster.username;
+
+        const url = `${API_URL}/reviews/`;
+        axios.post(url, {
+            taskId: this.state.task.id,
+            reviewer: this.state.username,
+            reviewee: reviewee,
+            rating: this.state.reviewRating,
+            content: this.state.reviewMessage
+        }, this.state.config)
+        .then(response => console.log(response));
+
+        this.setState({reviewMessage: '', reviewRating: 0, reviewFormVisible: false});
+    }
 
     markTaskAsComplete() {
         const url = `${API_URL}/tasks/${this.state.task.id}`;
@@ -149,6 +184,7 @@ class TasksPage extends React.Component {
         const task = this.state.task;
         const questions = this.state.questions;
         const offers = this.state.offers;
+        const iconSize = 30;
 
         return (
             <div>
@@ -177,7 +213,7 @@ class TasksPage extends React.Component {
                                                 size="lg"
                                                 className="mt-2"
                                                 block
-                                                onClick={() => this.setState({offerFormVisible: !this.state.offerFormVisible})}
+                                                onClick={() => this.setState({offerFormVisible: true})}
                                             >
                                                 Make an Offer
                                             </Button>
@@ -229,6 +265,23 @@ class TasksPage extends React.Component {
                                                 No Offers to Review Yet
                                             </Button>
                                         }
+                                        {
+                                            task.status==='Completed' &&
+                                            !this.state.reviewFormVisible &&
+                                            (this.state.username===task.poster.username ||
+                                            this.state.username===task.assignee.username) &&
+                                            <Button 
+                                                variant="primary"
+                                                size="lg"
+                                                className="mt-2"
+                                                block
+                                                onClick={() => this.setState({reviewFormVisible: true})}
+                                            >
+                                                {`Add a Review for ${this.state.username===task.poster.username ?
+                                                task.assignee.first_name :
+                                                task.poster.first_name}`}
+                                            </Button>
+                                        }
 
                                         {this.state.offerFormVisible && task.poster.username!== this.state.username &&
                                             <Form className="mt-3" onSubmit={this.postOffer}>
@@ -275,9 +328,48 @@ class TasksPage extends React.Component {
                                             </Form>
                                         }
 
+                                        {this.state.reviewFormVisible &&
+                                            <Form className="mt-3" onSubmit={this.postReview}>
+                                                <Rating
+                                                    initialRating={this.state.reviewRating}
+                                                    className="mb-3"
+                                                    emptySymbol={<StarFill size={iconSize} fill="#dee2e6" />}
+                                                    fullSymbol={<StarFill size={iconSize} fill="orange" />}
+                                                    onChange={value => this.setState({reviewRating: value})}
+                                                />
+                                                <Form.Group controlId="reviewFormMessage">
+                                                    <Form.Control as="textarea"
+                                                                required
+                                                                rows="3"
+                                                                value={this.state.reviewMessage}
+                                                                placeholder="Review"
+                                                                onChange={e => this.setState({reviewMessage: e.target.value})}
+                                                    />
+                                                </Form.Group>
+                                                <Button variant="primary" 
+                                                        type="submit"
+                                                        size="sm" 
+                                                        disabled={this.state.reviewMessage==='' ||
+                                                                this.state.reviewRating===0}
+                                                >
+                                                        Post Review
+                                                </Button>
+                                                <Button variant="secondary" 
+                                                        size="sm" 
+                                                        className="ml-2"
+                                                        onClick={() => this.setState({reviewFormVisible: false, reviewMessage: '', reviewRating: 0})}
+                                                >
+                                                        Cancel
+                                                </Button>
+                                            </Form>
+                                        }
+
+
                                         <hr />
                                         <h4>{`Offers (${offers.length})`}</h4>
-                                        <OffersBoard offers={offers} />
+                                        <OffersBoard offers={offers} 
+                                                     assigneeId={task.assignee ? task.assignee.id : null}
+                                        />
 
                                         <hr />
                                         <h4>{`Questions (${questions.length})`}</h4>

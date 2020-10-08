@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import timeDiff from '../Util/Functions';
+import Badge from 'react-bootstrap/Badge';
 
 class OfferRow extends React.Component {
 
@@ -17,6 +18,8 @@ class OfferRow extends React.Component {
                         ${offer.tasker.last_name}`}
                         <span className="text-muted">{` @${offer.tasker.username}`} </span>
                     </Link>
+                    {this.props.assigneeId===offer.tasker.id &&
+                    <Badge pill variant="primary">Tasker</Badge>}
                 </h6>
                 <p className="m-0">{offer.message}</p>
                 <small className="text-muted m-0">{offerAge} ago</small>

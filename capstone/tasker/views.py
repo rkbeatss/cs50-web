@@ -112,7 +112,7 @@ def task_element(request, task_id):
 
     elif request.method == "PUT":
         data = json.loads(request.body)
-        
+
         status = data.get("status", "")
         task.status = status
 
@@ -245,11 +245,22 @@ def reviews_collection(request):
     API to post a new review
     """
     if request.method == "POST":
-        serializer = ReviewSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        data = json.loads(request.body)
+        task = Task.objects.get(id=data.get("taskId", ""))
+        reviewer = User.objects.get(username=data.get("reviewer", ""))
+        reviewee = User.objects.get(username=data.get("reviewee", ""))
+        rating = data.get("rating", "")
+        content = data.get("content", "")
+
+        review = Review(
+            task=task,
+            reviewer=reviewer,
+            reviewee=reviewee,
+            rating=rating,
+            content=content
+        )
+        review.save()
+        return JsonResponse({"message": "Review created successfully"}, status=201)
 
 
 @api_view(["GET"])

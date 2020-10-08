@@ -7,7 +7,7 @@ class OffersBoard extends React.Component {
         return (
             <div>
                 {this.props.offers.map(offer => (
-                    <OfferRow key={offer.id} offer={offer} />
+                    <OfferRow key={offer.id} offer={offer} assigneeId={this.props.assigneeId} />
                 ))}
             </div>
         );
