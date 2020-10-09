@@ -124,14 +124,6 @@ def task_element(request, task_id):
         
         task.save()
         return JsonResponse({"message": "Task updated successfully"}, status=204)
-    
-    # elif request.method == "PUT":
-
-    #     serializer = TaskSerializer(task, data=request.data, partial=True)
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         return Response(status=status.HTTP_204_NO_CONTENT)
-    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == "DELETE":
         task.delete()
@@ -228,11 +220,13 @@ def offer_element(request, offer_id):
         return Response(serializer.data)
 
     elif request.method == "PUT":
-        serializer = OfferSerializer(offer, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        data = json.loads(request.body)
+        
+        offer.price = data.get("price", "")
+        offer.message = data.get("message", "")
+        
+        offer.save()
+        return JsonResponse({"message": "Offer updated successfully"}, status=204)
 
     elif request.method == "DELETE":
         offer.delete()

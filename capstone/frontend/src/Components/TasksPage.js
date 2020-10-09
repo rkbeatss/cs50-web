@@ -36,6 +36,8 @@ class TasksPage extends React.Component {
             reviewRating: 0,
             offerFormVisible: false,
             reviewFormVisible: false,
+            alreadyMadeOffer: false,
+            existingOffer: '',
             username: jwt_decode(localStorage.getItem('token')).username,
             config: {
                 headers: {
@@ -49,6 +51,7 @@ class TasksPage extends React.Component {
         this.getMostRecentTask = this.getMostRecentTask.bind(this);
         this.postQuestion = this.postQuestion.bind(this);
         this.postOffer = this.postOffer.bind(this);
+        this.editOffer = this.editOffer.bind(this);
         this.postReview = this.postReview.bind(this);
         this.getAllTasks = this.getAllTasks.bind(this);
         this.markTaskAsComplete = this.markTaskAsComplete.bind(this);
@@ -65,7 +68,16 @@ class TasksPage extends React.Component {
         const url = `${API_URL}/tasks/${taskID}/offers`;
         axios.get(url, this.state.config)
         .then(response => response.data)
-        .then(offers => this.setState({offers: offers}))
+        .then(offers => {
+            const existingOffer = offers.filter(offer => offer.tasker.username===this.state.username)[0];
+            this.setState({
+                offers: offers,
+                existingOffer: existingOffer,
+                alreadyMadeOffer: existingOffer ? true : false,
+                message: existingOffer ? existingOffer.message : '',
+                price: existingOffer ? existingOffer.price : '',
+            });
+        });
     }
 
     fetchTask(task) {
@@ -118,7 +130,7 @@ class TasksPage extends React.Component {
         }, this.state.config)
         .then(response => console.log(response))
         .then(() => this.getQuestions(this.state.task.id));
-
+        
         this.setState({question: ''});
     }
 
@@ -139,6 +151,35 @@ class TasksPage extends React.Component {
         .then(() => this.getAllTasks());
 
         this.setState({message: '', price: '', offerFormVisible: false});
+    }
+
+    editOffer(event) {
+        event.preventDefault();
+
+        const url = `${API_URL}/offers/${this.state.existingOffer.id}`;
+        axios.put(url, {
+            message: this.state.message,
+            price: this.state.price
+        }, this.state.config)
+        .then(response => console.log(response));
+
+        this.setState(prevState => ({
+            offerFormVisible: false,
+            offers: [
+                ...prevState.offers.filter(offer => offer.tasker.username!==this.state.username && offer.timestamp > this.state.existingOffer.timestamp),
+                {
+                    ...prevState.offers.filter(offer => offer.tasker.username===this.state.username)[0],
+                    message: this.state.message,
+                    price: this.state.price
+                },
+                ...prevState.offers.filter(offer => offer.tasker.username!==this.state.username && offer.timestamp <= this.state.existingOffer.timestamp),
+            ],
+            existingOffer: {
+                ...prevState.existingOffer,
+                message: this.state.message,
+                price: this.state.price
+            },
+        }));
     }
     
     // Post the review by submitting form
@@ -168,14 +209,20 @@ class TasksPage extends React.Component {
             status: 'Completed',
         }, this.state.config)
         .then(response => console.log(response))
-        // Calling this to update offer number on card - must be more efficient way to do this?
-        .then(() => this.getAllTasks());
 
         this.setState(prevState => ({
             task: {
                 ...prevState.task,
                 status: 'Completed'
             },
+            tasks: [
+                ...prevState.tasks.filter(task => task.id!==this.state.task.id && task.timestamp > this.state.task.timestamp),
+                {
+                    ...prevState.tasks.filter(task => task.id===this.state.task.id)[0],
+                    status: 'Completed'
+                },
+                ...prevState.tasks.filter(task => task.id!==this.state.task.id && task.timestamp <= this.state.task.timestamp),
+            ],
         }));
     }
 
@@ -215,7 +262,9 @@ class TasksPage extends React.Component {
                                                 block
                                                 onClick={() => this.setState({offerFormVisible: true})}
                                             >
-                                                Make an Offer
+                                                {
+                                                    this.state.alreadyMadeOffer ? 'Edit Offer' : 'Make an Offer'
+                                                }
                                             </Button>
                                         }
                                         {
@@ -284,7 +333,7 @@ class TasksPage extends React.Component {
                                         }
 
                                         {this.state.offerFormVisible && task.poster.username!== this.state.username &&
-                                            <Form className="mt-3" onSubmit={this.postOffer}>
+                                            <Form className="mt-3" onSubmit={this.state.existingOffer ? this.editOffer : this.postOffer}>
                                                 <Form.Group controlId="offerFormMessage">
                                                     <Form.Control as="textarea"
                                                                 required
@@ -314,14 +363,23 @@ class TasksPage extends React.Component {
                                                         size="sm" 
                                                         disabled={this.state.message==='' || 
                                                                 this.state.price==='' || 
-                                                                this.state.price < 0}
+                                                                this.state.price < 0 ||
+                                                                (this.state.existingOffer && 
+                                                                this.state.message===this.state.existingOffer.message && 
+                                                                parseInt(this.state.price)===this.state.existingOffer.price)}
                                                 >
-                                                        Submit Offer
+                                                        {this.state.alreadyMadeOffer ? 'Edit Offer' : 'Submit Offer'}
                                                 </Button>
                                                 <Button variant="secondary" 
                                                         size="sm" 
                                                         className="ml-2"
-                                                        onClick={() => this.setState({offerFormVisible: false, message: '', price: ''})}
+                                                        onClick={() => {
+                                                            this.setState({
+                                                                offerFormVisible: false,
+                                                                message: this.state.alreadyMadeOffer ? this.state.existingOffer.message : '',
+                                                                price: this.state.alreadyMadeOffer ? this.state.existingOffer.price : ''
+                                                            });
+                                                        }}
                                                 >
                                                         Cancel
                                                 </Button>
