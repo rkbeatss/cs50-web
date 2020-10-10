@@ -38,6 +38,8 @@ class TasksPage extends React.Component {
             reviewFormVisible: false,
             alreadyMadeOffer: false,
             existingOffer: '',
+            existingReview: '',
+            alreadyAddedReview: false,
             username: jwt_decode(localStorage.getItem('token')).username,
             config: {
                 headers: {
@@ -47,12 +49,14 @@ class TasksPage extends React.Component {
         }
         this.getQuestions = this.getQuestions.bind(this);
         this.getOffers = this.getOffers.bind(this);
+        this.getReview = this.getReview.bind(this);
         this.fetchTask = this.fetchTask.bind(this);
         this.getMostRecentTask = this.getMostRecentTask.bind(this);
         this.postQuestion = this.postQuestion.bind(this);
         this.postOffer = this.postOffer.bind(this);
-        this.editOffer = this.editOffer.bind(this);
         this.postReview = this.postReview.bind(this);
+        this.editOffer = this.editOffer.bind(this);
+        this.editReview = this.editReview.bind(this);
         this.getAllTasks = this.getAllTasks.bind(this);
         this.markTaskAsComplete = this.markTaskAsComplete.bind(this);
     }
@@ -75,9 +79,28 @@ class TasksPage extends React.Component {
                 existingOffer: existingOffer,
                 alreadyMadeOffer: existingOffer ? true : false,
                 message: existingOffer ? existingOffer.message : '',
-                price: existingOffer ? existingOffer.price : '',
+                price: existingOffer ? existingOffer.price : ''
             });
         });
+    }
+
+    getReview(task) {
+        if (task.status==='Completed' && 
+            (task.poster.username===this.state.username || task.assignee.username===this.state.username)) {
+            
+            const url = `${API_URL}/task/${task.id}/reviews`;
+            axios.get(url, this.state.config)
+            .then(response => response.data)
+            .then(reviews => {
+                const existingReview = reviews.filter(review => review.reviewer.username===this.state.username)[0];
+                this.setState({
+                    existingReview: existingReview,
+                    alreadyAddedReview: existingReview ? true : false,
+                    reviewMessage: existingReview ? existingReview.content : '',
+                    reviewRating: existingReview ? existingReview.rating : 0
+                });
+            });
+        }
     }
 
     fetchTask(task) {
@@ -85,13 +108,14 @@ class TasksPage extends React.Component {
             task: task, 
             offerFormVisible: false, 
             reviewFormVisible: false,
-            message: '',
-            price: '',
-            reviewMessage: '',
-            reviewRating: 0
+            // message: '',
+            // price: '',
+            // reviewMessage: '',
+            // reviewRating: 0
         });
         this.getQuestions(task.id);
         this.getOffers(task.id);
+        this.getReview(task);
     }
 
     getMostRecentTask() {
@@ -181,6 +205,26 @@ class TasksPage extends React.Component {
             },
         }));
     }
+
+    editReview(event) {
+        event.preventDefault();
+
+        const url = `${API_URL}/review/${this.state.existingReview.id}`;
+        axios.put(url, {
+            rating: this.state.reviewRating,
+            content: this.state.reviewMessage
+        }, this.state.config)
+        .then(response => console.log(response));
+
+        this.setState(prevState => ({
+            reviewFormVisible: false,
+            existingReview: {
+                ...prevState.existingReview,
+                rating: this.state.reviewRating,
+                content: this.state.reviewMessage
+            }
+        }));
+    }
     
     // Post the review by submitting form
     postReview(event) {
@@ -198,9 +242,19 @@ class TasksPage extends React.Component {
             rating: this.state.reviewRating,
             content: this.state.reviewMessage
         }, this.state.config)
-        .then(response => console.log(response));
+        .then(response => response.data)
+        .then(review => this.setState({existingReview: review}));
 
-        this.setState({reviewMessage: '', reviewRating: 0, reviewFormVisible: false});
+        this.setState({
+            // reviewMessage: '',
+            // reviewRating: 0,
+            reviewFormVisible: false,
+            alreadyAddedReview: true,
+            // existingReview: {
+            //     rating: this.state.reviewRating,
+            //     content: this.state.reviewMessage
+            // }
+        });
     }
 
     markTaskAsComplete() {
@@ -326,9 +380,13 @@ class TasksPage extends React.Component {
                                                 block
                                                 onClick={() => this.setState({reviewFormVisible: true})}
                                             >
-                                                {`Add a Review for ${this.state.username===task.poster.username ?
-                                                task.assignee.first_name :
-                                                task.poster.first_name}`}
+                                                {
+                                                    this.state.alreadyAddedReview ? 
+                                                    'Edit Review' : 
+                                                    `Add a Review for ${this.state.username===task.poster.username ?
+                                                                        task.assignee.first_name :
+                                                                        task.poster.first_name}`
+                                                }
                                             </Button>
                                         }
 
@@ -387,7 +445,7 @@ class TasksPage extends React.Component {
                                         }
 
                                         {this.state.reviewFormVisible &&
-                                            <Form className="mt-3" onSubmit={this.postReview}>
+                                            <Form className="mt-3" onSubmit={this.state.existingReview ? this.editReview : this.postReview}>
                                                 <Rating
                                                     initialRating={this.state.reviewRating}
                                                     className="mb-3"
@@ -408,14 +466,23 @@ class TasksPage extends React.Component {
                                                         type="submit"
                                                         size="sm" 
                                                         disabled={this.state.reviewMessage==='' ||
-                                                                this.state.reviewRating===0}
+                                                                this.state.reviewRating===0 ||
+                                                                (this.state.existingReview && 
+                                                                this.state.reviewMessage===this.state.existingReview.content && 
+                                                                this.state.reviewRating===this.state.existingReview.rating)}
                                                 >
-                                                        Post Review
+                                                        {this.state.alreadyAddedReview ? 'Edit Review' : 'Post Review'}
                                                 </Button>
                                                 <Button variant="outline-secondary" 
                                                         size="sm" 
                                                         className="ml-2"
-                                                        onClick={() => this.setState({reviewFormVisible: false, reviewMessage: '', reviewRating: 0})}
+                                                        onClick={() => {
+                                                            this.setState({
+                                                                reviewFormVisible: false,
+                                                                reviewMessage: this.state.alreadyAddedReview ? this.state.existingReview.content : '',
+                                                                reviewRating: this.state.alreadyAddedReview ? this.state.existingReview.rating : 0
+                                                            });
+                                                        }}
                                                 >
                                                         Cancel
                                                 </Button>

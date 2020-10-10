@@ -254,7 +254,9 @@ def reviews_collection(request):
             content=content
         )
         review.save()
-        return JsonResponse({"message": "Review created successfully"}, status=201)
+
+        serializer = ReviewSerializer(review)
+        return Response(serializer.data)
 
 
 @api_view(["GET"])
@@ -289,3 +291,39 @@ def offers_reviews_collection(request, task_id):
         reviews = Review.objects.filter(reviewee__id__in=taskers, task__assignee__isnull=False).all().order_by("-timestamp")
         serializer = ReviewSerializer(reviews, many=True)
         return Response(serializer.data)
+
+
+@api_view(["GET"])
+def task_reviews_collection(request, task_id):
+    """
+    API to get all reviews associated with a specific task
+    """
+    try:
+        task = Task.objects.get(id=task_id)
+    except Task.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == "GET":
+        reviews = Review.objects.filter(task=task).all()
+        serializer = ReviewSerializer(reviews, many=True)
+        return Response(serializer.data)
+
+
+@api_view(["PUT"])
+def review_element(request, review_id):
+    """
+    API to update a specific review
+    """
+    try:
+        review = Review.objects.get(id=review_id)
+    except Review.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == "PUT":
+        data = json.loads(request.body)
+        
+        review.rating = data.get("rating", "")
+        review.content = data.get("content", "")
+        
+        review.save()
+        return JsonResponse({"message": "Review updated successfully"}, status=204)
