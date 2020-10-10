@@ -130,7 +130,7 @@ class TasksPage extends React.Component {
         }, this.state.config)
         .then(response => console.log(response))
         .then(() => this.getQuestions(this.state.task.id));
-        
+
         this.setState({question: ''});
     }
 
@@ -370,7 +370,7 @@ class TasksPage extends React.Component {
                                                 >
                                                         {this.state.alreadyMadeOffer ? 'Edit Offer' : 'Submit Offer'}
                                                 </Button>
-                                                <Button variant="secondary" 
+                                                <Button variant="outline-secondary" 
                                                         size="sm" 
                                                         className="ml-2"
                                                         onClick={() => {
@@ -412,7 +412,7 @@ class TasksPage extends React.Component {
                                                 >
                                                         Post Review
                                                 </Button>
-                                                <Button variant="secondary" 
+                                                <Button variant="outline-secondary" 
                                                         size="sm" 
                                                         className="ml-2"
                                                         onClick={() => this.setState({reviewFormVisible: false, reviewMessage: '', reviewRating: 0})}

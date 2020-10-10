@@ -131,7 +131,7 @@ class Profile extends React.Component {
                             >
                                     Save
                             </Button>
-                            <Button variant="secondary"
+                            <Button variant="outline-secondary"
                                     size="sm" 
                                     className="ml-2"
                                     onClick={() => this.setState({showEditAboutForm: false, about: user.about})}
